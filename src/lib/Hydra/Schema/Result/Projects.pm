@@ -88,6 +88,12 @@ __PACKAGE__->table("projects");
   data_type: 'text'
   is_nullable: 1
 
+=head2 enable_dynamic_run_command
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -111,6 +117,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "declvalue",
   { data_type => "text", is_nullable => 1 },
+  "enable_dynamic_run_command",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -243,8 +251,8 @@ Composing rels: L</projectmembers> -> username
 __PACKAGE__->many_to_many("usernames", "projectmembers", "username");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-08-26 12:02:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nKVZ8ZNCZQQ52zbpDAaoQQ
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-12-15 12:34:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bS11tgSe/pcl2GJxtX3jkQ
 
 use JSON::MaybeXS;
 
