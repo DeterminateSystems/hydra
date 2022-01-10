@@ -62,8 +62,6 @@ sub validateDeclarativeJobset {
             $update{nixexprpath} = undef;
             $update{nixexprinput} = undef;
         }
-    } else {
-        die "Missing jobset type";
     }
 
     my $enable_dynamic_run_command = defined $update{enable_dynamic_run_command} ? 1 : 0;
