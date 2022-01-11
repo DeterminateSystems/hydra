@@ -16,6 +16,7 @@ use File::Path;
 use File::Temp;
 use File::Spec;
 use Hydra::Helper::CatalystUtils;
+use Hydra::Helper::DynamicRunCommand;
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw(
@@ -65,10 +66,7 @@ sub validateDeclarativeJobset {
     }
 
     my $enable_dynamic_run_command = defined $update{enable_dynamic_run_command} ? 1 : 0;
-    if ($enable_dynamic_run_command
-        && !($config->{dynamicruncommand}->{enable}
-            && $project->{enable_dynamic_run_command}))
-    {
+    if (allowDynamicRunCommand($enable_dynamic_run_command, $project->{enable_dynamic_run_command})) {
         die "Dynamic RunCommand is not enabled by the server or the parent project.";
     }
 

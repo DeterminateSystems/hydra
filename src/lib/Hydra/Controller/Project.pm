@@ -6,6 +6,7 @@ use warnings;
 use base 'Hydra::Base::Controller::ListBuilds';
 use Hydra::Helper::Nix;
 use Hydra::Helper::CatalystUtils;
+use Hydra::Helper::DynamicRunCommand;
 
 
 sub projectChain :Chained('/') :PathPart('project') :CaptureArgs(1) {
@@ -150,7 +151,7 @@ sub updateProject {
     error($c, "You must specify a display name.") if $displayName eq "";
 
     my $enable_dynamic_run_command = defined $c->stash->{params}->{enable_dynamic_run_command} ? 1 : 0;
-    if ($enable_dynamic_run_command && !$c->config->{dynamicruncommand}->{enable}) {
+    if (allowDynamicRunCommand($enable_dynamic_run_command)) {
         badRequest($c, "Dynamic RunCommand is not enabled by the server.");
     }
 
