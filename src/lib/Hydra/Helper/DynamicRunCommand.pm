@@ -13,10 +13,13 @@ our @EXPORT = qw(
 );
 
 sub allowDynamicRunCommand {
-    my ($want_enabled, $enabled_on_project) = @_;
+    my ($want_enabled, $project) = @_;
     my $enabled_on_server = getHydraConfig()->{dynamicruncommand}->{enable};
 
-    if (defined $enabled_on_project) {
+    # TODO: maybe see if the Jobset and Project schemas can be modified to
+    # validate this for us...
+    if (defined $project) {
+        my $enabled_on_project = $project->{enable_dynamic_run_command};
         if ($want_enabled && !($enabled_on_server && $enabled_on_project)) {
             return 0;
         }
