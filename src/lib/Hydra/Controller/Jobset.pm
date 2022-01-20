@@ -263,7 +263,7 @@ sub updateJobset {
     my $checkinterval = int(trim($c->stash->{params}->{checkinterval}));
 
     my $enable_dynamic_run_command = defined $c->stash->{params}->{enable_dynamic_run_command} ? 1 : 0;
-    if (!allowDynamicRunCommand($enable_dynamic_run_command, $jobset->project)) {
+    if (!allowDynamicRunCommand($enable_dynamic_run_command, {$jobset->project->get_columns})) {
         badRequest($c, "Dynamic RunCommand is not enabled by the server or the parent project.");
     }
 

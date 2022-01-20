@@ -19,7 +19,7 @@ sub allowDynamicRunCommand {
     # TODO: maybe see if the Jobset and Project schemas can be modified to
     # validate this for us...
     if (defined $project) {
-        my $enabled_on_project = $project->enable_dynamic_run_command;
+        my $enabled_on_project = $project->{enable_dynamic_run_command};
         if ($want_enabled && !($enabled_on_server && $enabled_on_project)) {
             return 0;
         }
