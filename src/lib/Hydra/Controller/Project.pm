@@ -151,7 +151,7 @@ sub updateProject {
     error($c, "You must specify a display name.") if $displayName eq "";
 
     my $enable_dynamic_run_command = defined $c->stash->{params}->{enable_dynamic_run_command} ? 1 : 0;
-    if (allowDynamicRunCommand($enable_dynamic_run_command)) {
+    if (!allowDynamicRunCommand($enable_dynamic_run_command)) {
         badRequest($c, "Dynamic RunCommand is not enabled by the server.");
     }
 
