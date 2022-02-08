@@ -4,10 +4,10 @@ use warnings;
 use Setup;
 use Test2::V0;
 
-my $ctx = test_context();
+my $ctx    = test_context();
 my $builds = $ctx->makeAndEvaluateJobset(
     expression => "one-job.nix",
-    build => 1
+    build      => 1
 );
 
 subtest "Updating GC roots" => sub {

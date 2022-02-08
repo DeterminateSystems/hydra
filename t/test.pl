@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use lib 'lib';
+
 BEGIN {
     use File::Which qw(which);
     $App::Yath::Script::SCRIPT = which 'yath';

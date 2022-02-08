@@ -14,7 +14,7 @@ path_input_cache_validity_seconds = 0
 |
 );
 
-my $dbh = $ctx->db()->storage->dbh;
+my $dbh      = $ctx->db()->storage->dbh;
 my $listener = Hydra::PostgresListener->new($dbh);
 
 $listener->subscribe("cached_build_finished");
@@ -26,15 +26,14 @@ $listener->subscribe("eval_added");
 $listener->subscribe("eval_started");
 $listener->subscribe("builds_added");
 
-
 my $jobsetdir = $ctx->tmpdir . '/jobset';
 mkdir($jobsetdir);
 copy($ctx->jobsdir . '/hydra-eval-notifications.nix', "$jobsetdir/default.nix");
 
 my $builds = $ctx->makeAndEvaluateJobset(
     expression => "default.nix",
-    jobsdir => $jobsetdir,
-    build => 0
+    jobsdir    => $jobsetdir,
+    build      => 0
 );
 
 subtest "on the initial evaluation" => sub {
@@ -43,16 +42,16 @@ subtest "on the initial evaluation" => sub {
     is($listener->block_for_messages(0)->()->{"channel"}, "build_queued", "expect 2/4 builds being queued");
     is($listener->block_for_messages(0)->()->{"channel"}, "build_queued", "expect 3/4 builds being queued");
     is($listener->block_for_messages(0)->()->{"channel"}, "build_queued", "expect 4/4 builds being queued");
-    is($listener->block_for_messages(0)->()->{"channel"}, "eval_added", "the evaluation has completed");
+    is($listener->block_for_messages(0)->()->{"channel"}, "eval_added",   "the evaluation has completed");
     is($listener->block_for_messages(0)->()->{"channel"}, "builds_added", "new builds have been scheduled");
-    is($listener->block_for_messages(0)->(), undef, "there are no more messages from the evaluator");
+    is($listener->block_for_messages(0)->(),              undef, "there are no more messages from the evaluator");
 };
 
 subtest "on a subsequent, totally cached / unchanged evaluation" => sub {
     ok(evalSucceeds($builds->{"variable-job"}->jobset), "evaluating for the second time");
     is($listener->block_for_messages(0)->()->{"channel"}, "eval_started", "an evaluation has started");
     is($listener->block_for_messages(0)->()->{"channel"}, "eval_cached", "the evaluation finished and nothing changed");
-    is($listener->block_for_messages(0)->(), undef, "there are no more messages from the evaluator");
+    is($listener->block_for_messages(0)->(),              undef, "there are no more messages from the evaluator");
 };
 
 subtest "on a fresh evaluation with changed sources" => sub {
@@ -72,12 +71,10 @@ subtest "on a fresh evaluation with changed sources" => sub {
     # The order of builds is randomized when writing to the database,
     # so we can't expect the list in any specific order here.
     is(
-        [sort(
-            $listener->block_for_messages(0)->()->{"channel"},
-            $listener->block_for_messages(0)->()->{"channel"},
-            $listener->block_for_messages(0)->()->{"channel"},
-            $listener->block_for_messages(0)->()->{"channel"}
-        )],
+        [
+            sort($listener->block_for_messages(0)->()->{"channel"}, $listener->block_for_messages(0)->()->{"channel"},
+                $listener->block_for_messages(0)->()->{"channel"}, $listener->block_for_messages(0)->()->{"channel"})
+        ],
         [
             # The `variable-job` build since it is the only one that is
             # totally different in this evaluation.
@@ -95,9 +92,9 @@ subtest "on a fresh evaluation with changed sources" => sub {
         "we get a notice that a build is queued, one is still queued from a previous eval"
     );
 
-    is($listener->block_for_messages(0)->()->{"channel"}, "eval_added", "a new evaluation was added");
+    is($listener->block_for_messages(0)->()->{"channel"}, "eval_added",   "a new evaluation was added");
     is($listener->block_for_messages(0)->()->{"channel"}, "builds_added", "a new build was added");
-    is($listener->block_for_messages(0)->(), undef, "there are no more messages from the evaluator");
+    is($listener->block_for_messages(0)->(),              undef, "there are no more messages from the evaluator");
 };
 
 subtest "on a fresh evaluation with corrupted sources" => sub {
@@ -107,8 +104,8 @@ subtest "on a fresh evaluation with corrupted sources" => sub {
 
     ok(evalFails($builds->{"variable-job"}->jobset), "evaluating the corrupted job");
     is($listener->block_for_messages(0)->()->{"channel"}, "eval_started", "the evaluation started");
-    is($listener->block_for_messages(0)->()->{"channel"}, "eval_failed", "the evaluation failed");
-    is($listener->block_for_messages(0)->(), undef, "there are no more messages from the evaluator");
+    is($listener->block_for_messages(0)->()->{"channel"}, "eval_failed",  "the evaluation failed");
+    is($listener->block_for_messages(0)->(),              undef, "there are no more messages from the evaluator");
 
 };
 
