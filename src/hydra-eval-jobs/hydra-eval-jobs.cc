@@ -166,6 +166,7 @@ static void worker(
         /* Evaluate it and send info back to the master. */
         nlohmann::json reply;
 
+        exit(9);
         try {
             auto vTmp = findAlongAttrPath(state, attrPath, autoArgs, *vRoot).first;
 
