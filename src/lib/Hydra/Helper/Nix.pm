@@ -5,7 +5,6 @@ use warnings;
 use Exporter;
 use File::Path;
 use File::Basename;
-use Config::General;
 use Hydra::Config;
 use Hydra::Helper::CatalystUtils;
 use Hydra::Model::DB;
@@ -18,8 +17,6 @@ use UUID4::Tiny qw(is_uuid4_string);
 our @ISA = qw(Exporter);
 our @EXPORT = qw(
     cancelBuilds
-    captureStdoutStderr
-    captureStdoutStderrWithStdin
     constructRunCommandLogPath
     findLog
     gcRootFor
@@ -50,24 +47,6 @@ sub getHydraHome {
     my $dir = $ENV{"HYDRA_HOME"} or die "The HYDRA_HOME directory does not exist!\n";
     return $dir;
 }
-
-
-my $hydraConfig;
-
-sub getHydraConfig {
-    return $hydraConfig if defined $hydraConfig;
-    my $conf = $ENV{"HYDRA_CONFIG"} || (Hydra::Model::DB::getHydraPath . "/hydra.conf");
-    my %opts = (%Hydra::Config::configGeneralOpts, -ConfigFile => $conf);
-    if (-f $conf) {
-        my %h = Config::General->new(%opts)->getall;
-
-        $hydraConfig = \%h;
-    } else {
-        $hydraConfig = {};
-    }
-    return $hydraConfig;
-}
-
 
 # Return hash of statsd configuration of the following shape:
 # (
@@ -429,30 +408,7 @@ sub pathIsInsidePrefix {
 }
 
 
-sub captureStdoutStderr {
-    my ($timeout, @cmd) = @_;
 
-    return captureStdoutStderrWithStdin($timeout, \@cmd, "");
-}
-
-sub captureStdoutStderrWithStdin {
-    my ($timeout, $cmd, $stdin) = @_;
-    my $stdout;
-    my $stderr;
-
-    eval {
-        local $SIG{ALRM} = sub { die "timeout\n" }; # NB: \n required
-        alarm $timeout;
-        IPC::Run::run($cmd, \$stdin, \$stdout, \$stderr);
-        alarm 0;
-        1;
-    } or do {
-        die unless $@ eq "timeout\n"; # propagate unexpected errors
-        return (-1, $stdout, ($stderr // "") . "timeout\n");
-    };
-
-    return ($?, $stdout, $stderr);
-}
 
 
 sub run {
@@ -581,7 +537,7 @@ sub getStoreUri {
 sub readNixFile {
     my ($path) = @_;
     return grab(cmd => ["nix", "--experimental-features", "nix-command",
-                        "cat-store", "--store", getStoreUri(), "$path"]);
+                        "store", "cat", "--store", getStoreUri(), "$path"]);
 }
 
 

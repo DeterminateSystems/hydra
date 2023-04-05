@@ -55,6 +55,30 @@ After processing, the row's `notificationspendingsince` column is set to null.
 
 It is possible for subsequent deliveries of the same `build_finished` data to imply different outcomes. For example, if the build fails, is restarted, and then succeeds. In this scenario the `build_finished` events will be delivered at least twice, once for the failure and then once for the success.
 
+### `eval_started`
+
+* **Payload:** Exactly two values, tab separated: an opaque trace ID representing this evaluation, and the ID of the jobset.
+* **When:** At the beginning of the evaluation phase for the jobset, before any work is done.
+* **Delivery Semantics:** Ephemeral. `hydra-notify` must be running to react to this event. No record of this event is stored.
+
+### `eval_added`
+
+* **Payload:** Exactly three values, tab separated: an opaque trace ID representing this evaluation, the ID of the jobset, and the ID of the JobsetEval record.
+* **When:** After the evaluator fetches inputs and completes the evaluation successfully.
+* **Delivery Semantics:** Ephemeral. `hydra-notify` must be running to react to this event. No record of this event is stored.
+
+### `eval_cached`
+
+* **Payload:** Exactly three values: an opaque trace ID representing this evaluation, the ID of the jobset, and the ID of the previous identical evaluation.
+* **When:** After the evaluator fetches inputs, if none of the inputs changed.
+* **Delivery Semantics:** Ephemeral. `hydra-notify` must be running to react to this event. No record of this event is stored.
+
+### `eval_failed`
+
+* **Payload:** Exactly two values: an opaque trace ID representing this evaluation, and the ID of the jobset.
+* **When:** After any fetching any input fails, or any other evaluation error occurs.
+* **Delivery Semantics:** Ephemeral. `hydra-notify` must be running to react to this event. No record of this event is stored.
+
 ## Development Notes
 
 ### Re-sending a notification

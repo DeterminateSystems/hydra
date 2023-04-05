@@ -3,9 +3,13 @@ use warnings;
 use Setup;
 use Data::Dumper;
 use Test2::V0;
+use Hydra::Helper::Exec;
+
 my $ctx = test_context(
     use_external_destination_store => 1
 );
+
+require Hydra::Helper::Nix;
 
 # This test is regarding https://github.com/NixOS/hydra/pull/1126
 #
@@ -35,7 +39,7 @@ subtest "Building, caching, and then garbage collecting the underlying job" => s
 
     ok(unlink(Hydra::Helper::Nix::gcRootFor($path)), "Unlinking the GC root for underlying Dependency succeeds");
 
-    (my $ret, my $stdout, my $stderr) = captureStdoutStderr(1, "nix-store", "--delete", $path);
+    (my $ret, my $stdout, my $stderr) = captureStdoutStderr(5, "nix-store", "--delete", $path);
     is($ret, 0, "Deleting the underlying dependency should succeed");
 };
 

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Setup;
 use Test2::V0;
+use Hydra::Helper::Exec;
 
 my $ctx = test_context();
 my $builds = $ctx->makeAndEvaluateJobset(
@@ -15,7 +16,7 @@ subtest "Updating GC roots" => sub {
     is($res, 0, "hydra-update-gc-roots should exit zero");
     if ($res != 0) {
         print "gc roots stdout: $stdout\n";
-        print "gc roots stderr: $stderr";
+        print "gc roots stderr: $stderr\n";
     }
 };
 
